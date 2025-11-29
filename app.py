@@ -57,21 +57,6 @@ def load_marker(csv_file):
 
     return markers
 
-# def load_node_coords(csv_files):
-#     node_coords = {}
-#     for csv_file in csv_files:
-#         df = pd.read_csv(csv_file, skiprows=1, header=None, names=['toko', 'x', 'y'])
-#         for _, row in df.iterrows():
-#             name = row['toko']
-#             x = int(row['x'])
-#             y = int(row['y'])
-            
-#             if str(row['lantai']).strip().upper() == '3':
-#                 y -= 20
-            
-#             node_coords[name] = (x, y)
-#     return node_coords
-
 def load_node_coords(csv_files):
     node_coords = {}
     for csv_file in csv_files:
@@ -364,66 +349,11 @@ graph = {
 
 @app.route('/')
 def index():
-    return render_template('login_register.html')
-
-@app.route('/login', methods=['POST'])
-def login():
-    username = request.form['username']
-    password = request.form['password']
-    users = load_users()
-
-    if username in users and users[username]['password'] == password:
-        session['username'] = username
-        return redirect(url_for('home'))
-    else:
-        flash('Login gagal: Username atau password salah')
-        return redirect(url_for('index'))
-
-@app.route('/register', methods=['POST'])   
-def register():
-    username = request.form['username']
-    email = request.form['email']
-    password = request.form['password']
-    confirm_password = request.form['confirm_password']
-
-    if password != confirm_password:
-        flash("Password dan konfirmasi password tidak cocok!", "error")
-        return render_template('login_register.html', show_register=True)
-
-    users = load_users()
-    if username in users:
-        flash('Username sudah terdaftar')
-        return render_template('login_register.html', show_register=True)
-
-    # Tambah user baru
-    new_user = pd.DataFrame([[username, email, password]], columns=['username', 'email', 'password'])
-    new_user.to_csv(csv_akun, mode='a', index=False, header=False)
-    
-    flash('Pendaftaran berhasil! Silakan login')
-    return redirect(url_for('index'))
-
-@app.route('/logout')
-def logout():
-    session.pop('username', None)
-    return redirect(url_for('index'))
-
-@app.route('/forgot_password', methods=['GET', 'POST'])
-def forgot_password():
-    if request.method == 'POST':
-        email = request.form['email']
-
-        if not is_email_registered(email):
-            flash("Email belum terdaftar")
-            return redirect(url_for('forgot_password'))
-
-        flash(f"Link reset password sudah dikirim ke {email} (simulasi)")
-        return redirect(url_for('forgot_password'))
-
-    return render_template('forgot_password.html')
+    return redirect(url_for('home'))
 
 @app.route('/home')
 def home():
-    username = session.get('username', 'User')
+    username = 'User'
     floors = [
         {"name": "Floor 1", "image": "/static/images/floor-1.png", "key": "floor-1"},
         {"name": "Floor 2", "image": "/static/images/floor-2.png", "key": "floor-2"},
@@ -454,9 +384,6 @@ def search():
 def route():
     start_node = request.args.get('start')
     goal_node = request.args.get('goal')
-    
-    start_info = node_coords.get(start_node)
-    goal_info = node_coords.get(goal_node)
 
     rute = bfs(graph, start_node, goal_node)
     

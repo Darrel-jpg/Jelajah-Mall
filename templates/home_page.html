@@ -12,7 +12,7 @@
 </head>
 <body>
     <nav class="sidebar">
-        <header>
+        {# <header>
             <div class="profil-container">
                 <span>
                     <a href="#"><img src="/static/images/user-icon.png" alt="" width="30px"></a>
@@ -21,7 +21,7 @@
                     <a href="#"><span class="name">{{ username }}</span></a>
                 </div>
             </div>
-        </header>
+        </header> #}
         <div class="menu-bar">
             <div class="menu">
                 <li class="search-box">
@@ -34,14 +34,6 @@
                         <a href="#"><span>{{ toko }}</span></a>
                     </li>
                     {% endfor %}
-                </ul>
-                <ul>
-                    <li>
-                        <div class="logout-container">
-                            <span><a href="{{ url_for('logout') }}"><img src="/static/images/logout-icon.png" alt="" width="40px"></a></span>
-                            <div class="text-logout"><span class="name">Logout</span></div>
-                        </div>
-                    </li>
                 </ul>
             </div>
         </div>
