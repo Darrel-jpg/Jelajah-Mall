@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='home_page.css') }}">
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/flowbite.min.js"></script>
+    <title>Projek Algo</title>
+</head>
+<body>
+    <nav class="sidebar">
+        <header>
+            <div class="profil-container">
+                <span>
+                    <a href="#"><img src="/static/images/user-icon.png" alt="" width="30px"></a>
+                </span>
+                <div class="text-profil">
+                    <a href="#"><span class="name">{{ username }}</span></a>
+                </div>
+            </div>
+        </header>
+        <div class="menu-bar">
+            <div class="menu">
+                <li class="search-box">
+                    <a href="#"><i class="fa-solid fa-magnifying-glass search-icon" style="color: #000000;"></i></a>
+                    <input id="searchBox" type="search" placeholder="Search...">
+                </li>
+                <ul class="list-toko" id="listToko">
+                    {% for toko in list_toko %}
+                    <li class="nav-link">
+                        <a href="#"><span>{{ toko }}</span></a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <ul>
+                    <li>
+                        <div class="logout-container">
+                            <span><a href="{{ url_for('logout') }}"><img src="/static/images/logout-icon.png" alt="" width="40px"></a></span>
+                            <div class="text-logout"><span class="name">Logout</span></div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="dropdown-floor">
+        <button id="dropdownHoverButton" data-dropdown-toggle="dropdownHover" data-dropdown-trigger="click" class="dropdown-btn justify-between text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center" type="button" style="width: 122px;">
+            <span id="dropdownLabel">{{ floors[0].name }}</span>
+            <svg class="w-2.5 h-2.5 ms-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
+            </svg>
+        </button>
+        <div id="dropdownHover" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-sm w-44 dark:bg-gray-700">
+            <ul class="py-2 text-sm text-gray-700 dark:text-gray-200 list-floor" aria-labelledby="dropdownHoverButton">
+                {% for floor in floors %}
+                <li>
+                    <a href="#" data-image="{{ floor.image }}" data-key="{{ floor.key }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white dropdown-item">
+                        {{ floor.name }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="container-dropdownSearch">
+            <label for="start">Start:</label>
+            <div class="min-h-screen flex items-center justify-center">
+                <div class="relative group">
+                    <button id="dropdown-button-awal" class="inline-flex justify-between w-64 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500">
+                        <span id="start" class="mr-2">Pilih Lokasi Awal</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div id="dropdown-menu-awal" class="hidden absolute right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-1 space-y-1">
+                        <input id="searchAwal" class="block w-full px-4 py-2 text-gray-800 border rounded-md border-gray-300 focus:outline-none" type="text" placeholder="Search toko" autocomplete="off">
+                        <ul id="lokasiAwal" style="overflow-y: scroll; height: 300px" class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
+                            {% for toko in list_toko %}
+                            <li>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ toko }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <label for="goal" style="margin-left: 30px;">Tujuan:</label>
+            <div class="min-h-screen flex items-center justify-center">
+                <div class="relative group">
+                    <button id="dropdown-button-tujuan" class="inline-flex justify-between w-64 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-blue-500">
+                        <span id="goal" class="mr-2">Pilih Lokasi Tujuan</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2 -mr-1" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M6.293 9.293a1 1 0 011.414 0L10 11.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                    <div id="dropdown-menu-tujuan" class="hidden absolute right-0 mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-1 space-y-1">
+                        <input id="searchTujuan" class="block w-full px-4 py-2 text-gray-800 border rounded-md border-gray-300 focus:outline-none" type="text" placeholder="Search toko" autocomplete="off">
+                        <ul id="lokasiTujuan" style="overflow-y: scroll; height: 300px" class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownHoverButton">
+                            {% for toko in list_toko %}
+                            <li>
+                                <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">{{ toko }}</a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <button id="cari-rute-btn" type="button" class="dropdown-btn ml-3 mt-2 border border-white text-white bg-gray-800 hover:bg-gray-900 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">Cari Rute</button>
+        </div>
+
+        <div class="peta-container">
+            <img id="floorMap" src="{{ floors[0].image }}" alt="Floor Map" />
+            
+            <div id="marker-container"></div>
+        </div>
+
+        <div id="koordinat-info" style="bottom: 10%; font-weight: bold; position: absolute;">
+            Klik pada peta untuk melihat koordinat
+        </div>
+    </div>
+
+    <script>
+        const floors = {{ floors | tojson }};
+        const markers = {{ markers | tojson }};
+        const node_coords = {{ node_coords | tojson }};
+    </script>
+    <script src="{{ url_for('static', filename='home_page.js') }}"></script>
+</body>
+</html>

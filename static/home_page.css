@@ -1,0 +1,265 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+*{
+    font-family: 'Poppins', sans-serif;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body{
+    display: flex;
+    position: relative;
+    height: 100vh;
+    background: #ADA996;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #EAEAEA, #DBDBDB, #F2F2F2, #ADA996); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    overflow-y: hidden;
+    overflow-x: hidden;
+}
+
+.sidebar{
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 250px;
+    padding: 10px 14px;
+    background: #2b2c3b;
+}
+
+.sidebar li{
+    height: 50px;
+    margin-top: 10px;
+    list-style: none;
+    display: flex;
+    align-items: center;
+
+}
+
+.sidebar .text{
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.sidebar .profil-text .user-icon{
+    font-size: 27px;
+    margin: 10px;
+}
+
+.sidebar header .profil-container{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    margin-top: 15px;
+    margin-left: 4px;
+    color: #fff;
+}
+
+.search-icon{
+    font-size: 20px;
+    display: flex;
+    /* min-width: 60px; */
+    margin-left: 3px;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.search-box{
+    background: #eef4ff;
+    border-radius: 17px;
+}
+
+.search-box input{
+    height: 100%;
+    width: 100%;
+    border: none;
+    background: transparent;
+}
+
+.search-box input:focus {
+    box-shadow: none;
+}
+
+.list-toko{
+    margin-top: 25px;
+    overflow-y: scroll;
+    height: 500px;
+    color: #fff;
+}
+
+.list-floor{
+    height: 300px;
+    overflow-y: scroll;
+}
+
+.nav-link{
+    padding-left: 10px;
+    border-radius: 9px 0 0 9px;
+}
+
+.nav-link:hover{
+    background: #DBDBDB;
+    transition: 0.3s ease-in-out;
+}
+
+.nav-link a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.nav-link:hover a {
+    color: #000;
+    text-decoration: none;
+}
+
+.logout-container{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 100px;
+    color: #fff;
+}
+
+.content{
+    display: flex;
+    flex: 1;
+    margin-left: 268px;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.peta-container {
+    position: relative; /* KUNCI: Menjadi acuan koordinat (0,0) */
+    width: fit-content; /* Lebar container mengikuti lebar gambar */
+    max-width: 90%;     /* Agar tidak melebihi layar */
+    height: auto;
+    margin: 100px auto 0 auto; /* Tengah secara horizontal */
+    overflow: visible !important;
+    
+    /* Hapus clip-path dulu agar kita yakin semua koordinat terlihat */
+    /* clip-path: polygon(...); */ 
+    
+    background-size: cover;
+}.peta-container {
+    position: relative; /* KUNCI: Menjadi acuan koordinat (0,0) */
+    width: fit-content; /* Lebar container mengikuti lebar gambar */
+    max-width: 90%;     /* Agar tidak melebihi layar */
+    height: auto;
+    margin: 100px auto 0 auto; /* Tengah secara horizontal */
+    overflow: visible !important;
+    
+    /* Hapus clip-path dulu agar kita yakin semua koordinat terlihat */
+    /* clip-path: polygon(87% 0, 86% 40%, 100% 64%, 100% 100%, 70% 100%, 48% 61%, 0 61%, 0 27%, 0 0); */
+    
+    background-size: cover;
+}
+
+
+
+.peta-container:hover {
+    cursor: url('images/lokasi-icon.png') 15 30, auto;
+}
+
+.dropdown-floor{
+    position: absolute;
+    left: 1350px;
+    top: 40px;
+}
+
+.dropdown-btn{
+    background-color: #333446 !important;
+    color: #fff !important;
+}
+
+.dropdown-btn:hover{
+    background-color: #2b2c3b !important;
+}
+
+.marker {
+    position: absolute;
+    width: 24px;
+    height: 24px;
+    background-size: contain;
+    cursor: pointer;
+}
+
+#marker-container {
+    position: absolute;  /* Absolute terhadap .peta-container */
+    top: 0;              /* Tempel di pojok kiri atas container */
+    left: 0;             /* Tempel di pojok kiri atas container */
+    width: 100%;         /* Lebar sama persis dengan gambar */
+    height: 100%;        /* Tinggi sama persis dengan gambar */
+    pointer-events: none; /* Klik tembus ke peta */
+    z-index: 10;
+}
+
+#marker-container .marker {
+    position: absolute;
+    color: red;
+    font-size: 20px;
+    z-index: 1000;
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+/* Tooltip terpisah, tidak jadi child marker */
+.tooltip {
+    position: absolute;
+    display: none;
+    padding: 4px 8px;
+    background-color: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    border-radius: 4px;
+    white-space: nowrap;
+    font-size: 12px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+    z-index: 9999;
+}
+
+.tooltip.show {
+    display: block;
+    opacity: 1;
+}
+
+.container-dropdownSearch{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    background-color: #333446;
+    color: #fff;
+    top: 4%;
+    left: 25%;
+    width: auto;
+    height: 60px;
+    padding: 10px;
+    border-radius: 8px;
+    z-index: 9998;
+    gap: 7px;
+}
+
+#search-input{
+    color: #000;
+}
+
+#floorMap {
+    display: block;      /* Hilangkan gap di bawah gambar */
+    width: 100%;         /* Responsif: Mengikuti lebar container */
+    height: auto;        /* Menjaga aspek rasio agar tidak gepeng */
+}
+
+canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 5; /* Di bawah marker, di atas peta */
+}
