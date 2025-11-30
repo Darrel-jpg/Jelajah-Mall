@@ -1,10 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import pandas as pd
 import os
-app = Flask(__name__)
-app.secret_key = 'rahasia-super-aman'
 
-csv_akun = 'akun.csv'
+app = Flask(__name__)
 csv_files = ['toko.csv', 'jalan.csv']
 
 def binary_search(arr, key):
@@ -29,19 +27,6 @@ def binary_search(arr, key):
         i += 1
 
     return result
-
-def load_users():
-    if not os.path.exists(csv_akun):
-        return {}
-    df = pd.read_csv(csv_akun)
-    users = df.set_index('username')[['email', 'password']].to_dict(orient='index')
-    return users
-
-def is_email_registered(email):
-    if not os.path.exists(csv_akun):
-        return False
-    df = pd.read_csv(csv_akun)
-    return email in df['email'].values
 
 def load_marker(csv_file):
     df = pd.read_csv(csv_file, skiprows=1, header=None, names=['lantai', 'toko', 'x', 'y'])
@@ -384,7 +369,6 @@ def search():
 def route():
     start_node = request.args.get('start')
     goal_node = request.args.get('goal')
-
     rute = bfs(graph, start_node, goal_node)
     
     coords_rute = []
@@ -396,7 +380,6 @@ def route():
         "route": rute,
         "coordinates": coords_rute
     })
-    
 
 if __name__ == '__main__':
     app.run(debug=True)
