@@ -9,8 +9,9 @@ const petaContainer = document.querySelector(".peta-container");
 // State Management
 let currentRouteCoords = []; 
 let currentFloorKeyGlobal = ""; 
+let globalRouteData = []; 
 
-// KONFIGURASI KALIBRASI (Sesuai data terakhir Mas Adam)
+// KONFIGURASI KALIBRASI
 const CONFIG = {
     BASIS_LEBAR: 1150, 
     BASIS_TINGGI: 610,
@@ -26,7 +27,7 @@ canvas.style.pointerEvents = "none";
 canvas.style.position = "absolute";
 canvas.style.top = "0";
 canvas.style.left = "0";
-canvas.style.zIndex = "10"; // Di atas peta, di bawah marker
+canvas.style.zIndex = "10"; 
 petaContainer.appendChild(canvas);
 const ctx = canvas.getContext("2d");
 
@@ -35,17 +36,13 @@ const ctx = canvas.getContext("2d");
 // 2. HELPER FUNCTIONS (UTILITIES)
 // ==========================================
 
-// Fungsi sentral untuk menghitung skala saat ini
 function calculateScale() {
-    // Fallback ke BASIS jika gambar belum load sempurna
     const currentWidth = floorMap.offsetWidth || CONFIG.BASIS_LEBAR;
-    
-    // Hitung rasio
     const scale = currentWidth / CONFIG.BASIS_LEBAR;
     
     return {
         scaleX: scale,
-        scaleY: scale // Lock Aspect Ratio (agar tidak gepeng)
+        scaleY: scale 
     };
 }
 
@@ -54,7 +51,6 @@ function clearMarkers() {
 }
 
 function clearRoute() {
-    // Sesuaikan ukuran canvas dengan gambar saat menghapus
     canvas.width = floorMap.offsetWidth;
     canvas.height = floorMap.offsetHeight;
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -78,34 +74,28 @@ function drawMarkers(floorKey) {
         const markerEl = document.createElement("div");
         markerEl.classList.add("marker");
 
-        // Rumus Transformasi Koordinat
         const posX = (marker.x * scaleX) - CONFIG.MARKER_OFFSET_X;
         const posY = (marker.y * scaleY) - CONFIG.MARKER_OFFSET_Y;
 
-        markerEl.style.left = `${posX - 10}px`; // -10 untuk centering (half width)
-        markerEl.style.top = `${posY - 10}px`;  // -10 untuk centering (half height)
+        markerEl.style.left = `${posX - 10}px`; 
+        markerEl.style.top = `${posY - 10}px`;  
         
-        // Asset & ID
         markerEl.style.backgroundImage = "url(/static/images/ikon-lokasi-20px.png)";
         markerEl.setAttribute("id", `marker-${marker.name.replace(/\s+/g, "-")}`);
         
-        // --- Tooltip Logic ---
         const tooltip = document.createElement("div");
         tooltip.classList.add("tooltip");
         tooltip.textContent = marker.name;
 
-        // Hover Effect
         markerEl.addEventListener("mouseenter", () => {
             tooltip.style.display = 'block'; 
-            // Kalkulasi posisi tooltip dinamis
             const mLeft = parseFloat(markerEl.style.left);
             const mTop = parseFloat(markerEl.style.top);
             
-            // Render sebentar untuk dapat width
             requestAnimationFrame(() => {
                 const tRect = tooltip.getBoundingClientRect();
                 tooltip.style.left = `${mLeft + 10 - (tRect.width / 2)}px`;
-                tooltip.style.top = `${mTop - tRect.height - 8}px`; // 8px gap
+                tooltip.style.top = `${mTop - tRect.height - 8}px`; 
                 tooltip.style.opacity = "1";
             });
         });
@@ -123,7 +113,6 @@ function drawMarkers(floorKey) {
 function drawRoute(coords) {
     currentRouteCoords = coords;
 
-    // Pastikan resolusi canvas tajam sesuai ukuran gambar
     canvas.width = floorMap.offsetWidth;
     canvas.height = floorMap.offsetHeight;
     
@@ -132,15 +121,12 @@ function drawRoute(coords) {
 
     const { scaleX, scaleY } = calculateScale();
 
-    // Style Garis
-    ctx.strokeStyle = "#2563eb"; // Royal Blue
+    ctx.strokeStyle = "#2563eb"; 
     ctx.lineWidth = 5;
     ctx.lineCap = "round";
     ctx.lineJoin = "round";
     ctx.shadowColor = "rgba(37, 99, 235, 0.5)";
     ctx.shadowBlur = 10;
-    
-    // Animasi Garis Putus-putus (Optional Style)
     ctx.setLineDash([10, 10]);
 
     ctx.beginPath();
@@ -157,9 +143,21 @@ function drawRoute(coords) {
     });
 
     ctx.stroke();
-    // Reset setting canvas
     ctx.setLineDash([]);
     ctx.shadowBlur = 0;
+}
+
+function drawRouteSmart() {
+    if (!globalRouteData || globalRouteData.length === 0) return;
+
+    const currentFloorNum = currentFloorKeyGlobal ? currentFloorKeyGlobal.replace("floor-", "") : "1";
+
+    const filteredCoords = globalRouteData.filter(point => {
+        const nodeInfo = node_coords[point.name];
+        return String(nodeInfo.lantai) === String(currentFloorNum);
+    });
+
+    drawRoute(filteredCoords);
 }
 
 
@@ -169,7 +167,6 @@ function drawRoute(coords) {
 
 document.addEventListener("DOMContentLoaded", () => {
     
-    // --- Initial Load ---
     if (Object.keys(markers).length > 0) {
         const firstFloor = Object.keys(markers)[0];
         const initMap = () => drawMarkers(firstFloor);
@@ -181,20 +178,19 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
     
-    // Setup Interaction Listeners
     setupFloorSelector();
     setupSearchFunctionality();
     setupRouteButtons();
     munculkanTooltipSidebar();
 });
 
-// Event: Window Resize (Responsiveness)
 window.addEventListener("resize", () => {
-    // Redraw everything on resize to keep coordinates accurate
     if (currentFloorKeyGlobal) {
         drawMarkers(currentFloorKeyGlobal);
     }
-    if (currentRouteCoords.length > 0) {
+    if (globalRouteData.length > 0) {
+        drawRouteSmart();
+    } else if (currentRouteCoords.length > 0) {
         drawRoute(currentRouteCoords);
     }
 });
@@ -216,10 +212,12 @@ function setupFloorSelector() {
 
             dropdownLabel.textContent = floorName;
             
-            // Ganti Source Gambar
             floorMap.onload = () => {
                 drawMarkers(floorKey);
-                clearRoute(); 
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                drawRouteSmart(); 
             };
             floorMap.setAttribute("src", imgSrc);
         });
@@ -227,18 +225,15 @@ function setupFloorSelector() {
 }
 
 function setupSearchFunctionality() {
-    // Sidebar Search
     const searchBox = document.getElementById("searchBox");
     searchBox.addEventListener("keypress", (e) => {
         if (e.key === "Enter") performSearch(e.target.value, "listToko");
     });
 
-    // Dropdown Search (Start & Goal)
     setupDropdownSearch("searchAwal", "lokasiAwal", "dropdown-button-awal", "dropdown-menu-awal");
     setupDropdownSearch("searchTujuan", "lokasiTujuan", "dropdown-button-tujuan", "dropdown-menu-tujuan");
 }
 
-// Logic Pencarian Generik
 function performSearch(query, listId, callback = null) {
     fetch("/search", {
         method: "POST",
@@ -253,7 +248,6 @@ function performSearch(query, listId, callback = null) {
         data.list_toko.forEach((toko) => {
             const li = document.createElement("li");
             
-            // Styling berbeda tergantung list mana (Sidebar vs Dropdown)
             if (listId === "listToko") {
                 li.className = "nav-item";
                 li.innerHTML = `<a href="#"><i class="fa-solid fa-location-dot"></i><span>${toko}</span></a>`;
@@ -261,7 +255,6 @@ function performSearch(query, listId, callback = null) {
                 li.innerHTML = `<a href="#" class="block px-4 py-2 hover:bg-blue-50 hover:text-blue-700 rounded-md">${toko}</a>`;
             }
             
-            // Add click listener
             li.querySelector("a").addEventListener("click", (e) => {
                 e.preventDefault();
                 if (callback) callback(toko);
@@ -270,7 +263,6 @@ function performSearch(query, listId, callback = null) {
             listContainer.appendChild(li);
         });
         
-        // Re-attach sidebar tooltip listeners if main list updated
         if (listId === "listToko") munculkanTooltipSidebar();
     });
 }
@@ -281,21 +273,17 @@ function setupDropdownSearch(inputId, listId, btnId, menuId) {
     const menu = document.getElementById(menuId);
     const span = btn.querySelector("span");
 
-    // Toggle Menu
     btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        // Tutup menu lain
         document.querySelectorAll(".dropdown-menu").forEach(el => {
             if (el.id !== menuId) el.classList.add("hidden");
         });
         menu.classList.toggle("hidden");
     });
 
-    // Close on outside click
     window.addEventListener("click", () => menu.classList.add("hidden"));
     menu.addEventListener("click", (e) => e.stopPropagation());
 
-    // Search Enter Key
     input.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
             performSearch(e.target.value, listId, (selectedToko) => {
@@ -305,7 +293,6 @@ function setupDropdownSearch(inputId, listId, btnId, menuId) {
         }
     });
 
-    // Initial List Click
     const initialLinks = document.querySelectorAll(`#${listId} a`);
     initialLinks.forEach(link => {
         link.addEventListener("click", (e) => {
@@ -331,7 +318,6 @@ function munculkanTooltipSidebar() {
 function focusOnToko(tokoName) {
     let targetFloor = null;
     
-    // Cari lantai toko
     for (const floor in markers) {
         const marker = markers[floor].find(m => m.name.toLowerCase() === tokoName.toLowerCase());
         if (marker) {
@@ -368,12 +354,8 @@ function highlightMarker(tokoName) {
     const markerId = `marker-${tokoName.replace(/\s+/g, "-")}`;
     const markerEl = document.getElementById(markerId);
     if (markerEl) {
-        // Efek visual highlight
-        // markerEl.style.transform = "scale(2.5)";
         markerEl.style.zIndex = "100";
-        // markerEl.style.filter = "hue-rotate(90deg)"; // Ubah warna dikit
         
-        // Trigger tooltip manual
         const eventEnter = new Event("mouseenter");
         markerEl.dispatchEvent(eventEnter);
         
@@ -396,7 +378,6 @@ function setupRouteButtons() {
         const start = spanAwal.textContent.trim();
         const goal = spanTujuan.textContent.trim();
 
-        // Validasi
         if (start.includes("Pilih") || goal.includes("Pilih")) {
             alert("Harap pilih Lokasi Awal dan Tujuan terlebih dahulu.");
             return;
@@ -410,12 +391,6 @@ function setupRouteButtons() {
             return;
         }
 
-        if (String(startNodeInfo.lantai) !== String(goalNodeInfo.lantai)) {
-            alert("Mohon maaf, rute antar lantai belum tersedia saat ini.");
-            return;
-        }
-
-        // Logic Rute
         const targetFloorNum = String(startNodeInfo.lantai).trim();
         const targetFloorKey = `floor-${targetFloorNum}`;
         const selectedFloor = floors.find((f) => f.key === targetFloorKey);
@@ -428,19 +403,21 @@ function setupRouteButtons() {
                         alert(data.error);
                         return;
                     }
-                    drawRoute(data.coordinates);
+    
+                    globalRouteData = data.coordinates; 
+                    drawRouteSmart();                 
                 })
                 .catch(err => console.error("Route Error:", err));
         };
 
-        // Ganti lantai jika perlu
         if (selectedFloor && dropdownLabel.textContent !== selectedFloor.name) {
             dropdownLabel.textContent = selectedFloor.name;
-            floorMap.setAttribute("src", selectedFloor.image);
+            
             floorMap.onload = () => {
                 drawMarkers(targetFloorKey);
                 executeRouteFetch();
             };
+            floorMap.setAttribute("src", selectedFloor.image);
         } else {
             executeRouteFetch();
         }
