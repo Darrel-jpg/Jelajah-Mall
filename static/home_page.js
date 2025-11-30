@@ -369,9 +369,9 @@ function highlightMarker(tokoName) {
     const markerEl = document.getElementById(markerId);
     if (markerEl) {
         // Efek visual highlight
-        markerEl.style.transform = "scale(2.5)";
+        // markerEl.style.transform = "scale(2.5)";
         markerEl.style.zIndex = "100";
-        markerEl.style.filter = "hue-rotate(90deg)"; // Ubah warna dikit
+        // markerEl.style.filter = "hue-rotate(90deg)"; // Ubah warna dikit
         
         // Trigger tooltip manual
         const eventEnter = new Event("mouseenter");
@@ -446,29 +446,3 @@ function setupRouteButtons() {
         }
     });
 }
-
-// ==========================================
-// CLICK UNTUK MENAMPILKAN KOORDINAT
-// ==========================================
-floorMap.addEventListener("click", function (event) {
-
-    const rect = floorMap.getBoundingClientRect();
-
-    // Koordinat relatif terhadap gambar (tanpa skala)
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-
-    // Hitung skala supaya dapat koordinat asli (basis)
-    const { scaleX, scaleY } = calculateScale();
-
-    const originalX = (x / scaleX).toFixed(2);
-    const originalY = (y / scaleY).toFixed(2);
-
-    console.log("Koordinat (basis):", originalX, originalY);
-
-    // Tampilkan di suatu elemen (opsional)
-    const infoBox = document.getElementById("koordinat-info");
-    if (infoBox) {
-        infoBox.textContent = `X: ${originalX}, Y: ${originalY}`;
-    }
-});

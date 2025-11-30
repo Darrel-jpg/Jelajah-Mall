@@ -90,11 +90,6 @@ body{
     color: #fff;
 }
 
-.list-floor{
-    height: 300px;
-    overflow-y: scroll;
-}
-
 .nav-link{
     padding-left: 10px;
     border-radius: 9px 0 0 9px;
@@ -149,20 +144,15 @@ body{
     width: fit-content; /* Lebar container mengikuti lebar gambar */
     max-width: 90%;     /* Agar tidak melebihi layar */
     height: auto;
-    margin: 100px auto 0 auto; /* Tengah secara horizontal */
+    margin: 100px auto 0 auto;
     overflow: visible !important;
-    
-    /* Hapus clip-path dulu agar kita yakin semua koordinat terlihat */
-    /* clip-path: polygon(87% 0, 86% 40%, 100% 64%, 100% 100%, 70% 100%, 48% 61%, 0 61%, 0 27%, 0 0); */
     
     background-size: cover;
 }
 
-
-
-.peta-container:hover {
+/* .peta-container:hover {
     cursor: url('images/lokasi-icon.png') 15 30, auto;
-}
+} */
 
 .dropdown-floor{
     position: absolute;
